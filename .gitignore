@@ -1,0 +1,4 @@
+*.html
+autom4te.cache
+*~
+*.geany

@@ -1,0 +1,28 @@
+simplecgen uses the simplectemplate
+<https://github.com/dafky2000/simplectemplate> library to generate a
+web site.
+
+The template library is included (If you like this project, please
+remember to also star the simplectemplate library repository).
+
+To build simplecgen:
+
+    cd src
+    ./configure
+    make
+
+simplecgen will look for the config file (simplecgen.conf) in the same directory as the
+binary file created after make is run.
+
+To generate the sample site:
+
+    From the top level directory
+
+        src/simplecgen (it will read ./templates and ./infiles for the data)
+
+You can then preview the site by opening index.html in your web browser.
+
+Some of the web site design was done by Elliot Alexander
+<https://github.com/escottalexander>
+
+LICENSE: GNU GPL3
