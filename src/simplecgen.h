@@ -27,7 +27,6 @@
 #define _INC_SIMPLECGEN_H
 
 #define _XOPEN_SOURCE 600
-#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -49,7 +48,7 @@
 #define LINE_LEN_MAX 161
 #define FILENAME_LEN_MAX 248
 
-#define CONFIG_FILE_BASE "simplecgen.conf"
+#define CONFIG_FILE "simplecgen.conf"
 
 typedef unsigned short int ushort;
 

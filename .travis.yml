@@ -43,6 +43,6 @@ before_install:
   - $CXX --version
 
 script:
-  - cd src
-  - ./configure
+  - mkdir build && cd build
+  - cmake ../src
   - make

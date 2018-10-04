@@ -1,6 +1,5 @@
-autom4te.cache
+build
 *~
 *.geany
-
 # only ignore generated files in the top level directory
 /*.html

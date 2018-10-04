@@ -50,7 +50,9 @@ int main(int argc, char **argv)
   char *bin_dir = dirname (argv[0]);
 
   char cfg_file[PATH_MAX + 1];
-  sprintf (cfg_file, "%s/%s", bin_dir, CONFIG_FILE_BASE);
+  // Not configurable yet. Look for the config in the directory where
+  // simplecgen is run from.
+  sprintf (cfg_file, "./", bin_dir, CONFIG_FILE);
 
   struct_cfg *cfgopts = calloc (sizeof (struct_cfg), 1);
 

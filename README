@@ -7,18 +7,19 @@ remember to also star the simplectemplate library repository).
 
 To build simplecgen:
 
-    cd src
-    ./configure
+    mkdir build
+    cd build
+    cmake ../src
     make
 
-simplecgen will look for the config file (simplecgen.conf) in the same directory as the
-binary file created after make is run.
+simplecgen will look for the config file (simplecgen.conf) in the
+directory from which you are running simplecgen.
 
 To generate the sample site:
 
     From the top level directory
 
-        src/simplecgen (it will read ./templates and ./infiles for the data)
+        ./build/simplecgen (it will read ./templates and ./infiles for the data)
 
 You can then preview the site by opening index.html in your web browser.
 
