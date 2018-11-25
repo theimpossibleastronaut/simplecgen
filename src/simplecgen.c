@@ -52,7 +52,12 @@ int main(int argc, char **argv)
   // simplecgen is run from.
   sprintf (cfg_file, "./", CONFIG_FILE);
 
-  struct_cfg *cfgopts = calloc (sizeof (struct_cfg), 1);
+  struct_cfg *cfgopts = (struct_cfg*)malloc (sizeof (struct_cfg));
+  if (cfgopts == NULL)
+  {
+    fprintf (stderr, "Unable to allocate memory.\n");
+    exit (EXIT_FAILURE);
+  }
 
   // char site_title[120];
 
