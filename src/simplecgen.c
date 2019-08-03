@@ -287,11 +287,11 @@ PRINT_DEBUG ("sub_title is '%s' at L%d\n", sub_title, __LINE__);
     /* FIXME: need a check to make sure the directory and file exists
      * add more flexibility so the user can change this (hint: config file)
      */
-    char *output_head_tmp = render_template_file ("templates/head.html", 2, title_data);
+    char *output_head_tmp = render_template_file2 ("templates/head.html", 2, title_data);
     strcpy (output_head, output_head_tmp);
     add_newline (output_head);
 
-    char *output_layout_tmp = render_template_file (layout_template, 2, body_data);
+    char *output_layout_tmp = render_template_file2 (layout_template, 2, body_data);
     strcpy (output_layout, output_layout_tmp);
     add_newline (output_layout);
 

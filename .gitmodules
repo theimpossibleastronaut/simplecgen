@@ -1,0 +1,3 @@
+[submodule "src/simplectemplate"]
+	path = src/simplectemplate
+	url = https://github.com/dafky2000/simplectemplate.git
