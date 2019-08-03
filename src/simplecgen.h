@@ -46,7 +46,12 @@
 #endif
 
 #define LINE_LEN_MAX 161
-#define FILENAME_LEN_MAX 248
+
+#ifndef PATH_MAX
+# #define PATH_MAX 256
+#endif
+
+#define LEN_MAX_FILENAME (PATH_MAX + 1)
 
 #define CONFIG_FILE "simplecgen.conf"
 

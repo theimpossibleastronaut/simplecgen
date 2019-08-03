@@ -120,11 +120,12 @@ int main(int argc, char **argv)
     if (strstr (dir_entry->d_name, ".sct") == NULL)
       continue;
 
-    char input_file[FILENAME_LEN_MAX + 1];
-    sprintf (input_file, "infiles/%s", dir_entry->d_name);
+    bufchk (dir_entry->d_name, LEN_MAX_FILENAME);
+    char input_file[LEN_MAX_FILENAME + sizeof "infiles/"];
+    snprintf (input_file, sizeof input_file, "infiles/%s", dir_entry->d_name);
 
-    char infile_URL[FILENAME_LEN_MAX];
-    sprintf (infile_URL, "%s/%s", cfgopts->repo_URL, dir_entry->d_name);
+    char infile_URL[LEN_MAX_FILENAME + sizeof cfgopts->repo_URL];
+    snprintf (infile_URL, sizeof infile_URL, "%s/%s", cfgopts->repo_URL, dir_entry->d_name);
 
     printf ("processing %s\n", input_file);
 
@@ -239,7 +240,7 @@ int main(int argc, char **argv)
       len--;
     }
 
-    char fb[FILENAME_LEN_MAX];
+    char fb[LEN_MAX_FILENAME];
 
     /* truncate the .sct extension */
     input_file[strlen (input_file) - 4] = '\0';
@@ -268,7 +269,7 @@ PRINT_DEBUG ("sub_title is '%s' at L%d\n", sub_title, __LINE__);
       "infile_URL", infile_URL
     };
 
-    char layout_template[FILENAME_LEN_MAX] = "";
+    char layout_template[LEN_MAX_FILENAME] = "";
     sprintf (layout_template, "templates/%s.html", layout);
 
     FILE *fp_layout;
@@ -299,8 +300,8 @@ PRINT_DEBUG ("sub_title is '%s' at L%d\n", sub_title, __LINE__);
         tail_size + 1];
     sprintf (output, "%s%s%s", output_head, output_layout, output_tail);
 
-    char dest_file[FILENAME_LEN_MAX + 1];
-    sprintf (dest_file, "%s.html", fb);
+    char dest_file[LEN_MAX_FILENAME + sizeof ".html"];
+    snprintf (dest_file, sizeof dest_file, "%s.html", fb);
 
     if ((fp = fopen (dest_file, "w")) == NULL)
     {
