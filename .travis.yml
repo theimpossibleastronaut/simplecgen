@@ -46,3 +46,4 @@ script:
   - mkdir build && cd build
   - cmake ../src
   - make
+  - cd .. && build/simplecgen
