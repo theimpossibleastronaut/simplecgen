@@ -1,7 +1,7 @@
 /*
  * simplecgen.h: generates html files using the simplectemplate library
  *
- * Copyright (C) 2017-2018  Andy Alt (andy400-dev@yahoo.com)
+ * Copyright (C) 2017-2019  Andy Alt (andy400-dev@yahoo.com)
  *
  * This file is part of simplecgen <https://github.com/theimpossibleastronaut/simplecgen>
  *

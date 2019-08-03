@@ -1,7 +1,7 @@
 /*
  * simplecgen.c: generates html files using the simplectemplate library
  *
- * Copyright (C) 2017-2018  Andy Alt (andy400-dev@yahoo.com)
+ * Copyright (C) 2017-2019  Andy Alt (andy400-dev@yahoo.com)
  *
  * This file is part of simplecgen <https://github.com/theimpossibleastronaut/simplecgen>
  *
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
   char cfg_file[PATH_MAX + 1];
   // Not configurable yet. Look for the config in the directory where
   // simplecgen is run from.
-  sprintf (cfg_file, "./", CONFIG_FILE);
+  sprintf (cfg_file, "./%s", CONFIG_FILE);
 
   struct_cfg *cfgopts = (struct_cfg*)malloc (sizeof (struct_cfg));
   if (cfgopts == NULL)
