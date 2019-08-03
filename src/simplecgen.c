@@ -88,13 +88,7 @@ int main(int argc, char **argv)
   size_t tail_size = ftell (tail_fp);
   rewind (tail_fp);
 
-  char *output_tail;
-  if ((output_tail = calloc (tail_size + 1, sizeof (char))) == NULL)
-  {
-    printf ("Unable to allocate memory\n");
-    return 1;
-  }
-
+  char output_tail[tail_size + 1];
   fread (output_tail, tail_size, 1, tail_fp);
 
   if (fclose (tail_fp) == EOF)
@@ -137,8 +131,8 @@ int main(int argc, char **argv)
     }
 
     /* get the title line */
-    char title_line[LINE_LEN_MAX + 1];
-    if (fgets (title_line, LINE_LEN_MAX, fp) == NULL)
+    char title_line[LEN_MAX_LINE + 1];
+    if (fgets (title_line, LEN_MAX_LINE, fp) == NULL)
     {
       perror ("Error getting line");
       fclose (fp);
@@ -157,9 +151,9 @@ int main(int argc, char **argv)
     trim (title);
 
     /* get the layout line */
-    char layout_line[LINE_LEN_MAX + 1];
+    char layout_line[LEN_MAX_LINE + 1];
 
-    if (fgets (layout_line, LINE_LEN_MAX, fp) == NULL)
+    if (fgets (layout_line, LEN_MAX_LINE, fp) == NULL)
     {
       perror ("Error getting line");
       fclose (fp);
@@ -247,7 +241,7 @@ int main(int argc, char **argv)
     strcpy (fb, basename (input_file));
 
     /* sub_title will appear after 'page title | ' in the title bar */
-    char sub_title[LINE_LEN_MAX];
+    char sub_title[LEN_MAX_LINE];
 
     if (strcmp (fb, "index") != 0)
       strcpy (sub_title, cfgopts->site_title);
@@ -279,26 +273,22 @@ PRINT_DEBUG ("sub_title is '%s' at L%d\n", sub_title, __LINE__);
       return 1;
     }
 
-    /* FIXME: This is a temporary fix to try to solve a malloc error
-     * @escottalexander is having on his os x system.
-     */
-    char output_head[2000000];
-    char output_layout[2000000];
-
     /* FIXME: need a check to make sure the directory and file exists
      * add more flexibility so the user can change this (hint: config file)
      */
-    char *output_head_tmp = render_template_file2 ("templates/head.html", 2, title_data);
-    strcpy (output_head, output_head_tmp);
-    add_newline (output_head);
+    char *output_head = render_template_file2 ("templates/head.html", 2, title_data);
+    if (output_head == NULL)
+    {
+      fprintf (stderr, "NULL returned while rendering template %s\n", "templates/head.html");
+      exit (EXIT_FAILURE);
+    }
 
-    char *output_layout_tmp = render_template_file2 (layout_template, 2, body_data);
-    strcpy (output_layout, output_layout_tmp);
-    add_newline (output_layout);
-
-    char output[strlen (output_head) + strlen (output_layout) +
-        tail_size + 1];
-    sprintf (output, "%s%s%s", output_head, output_layout, output_tail);
+    char *output_layout = render_template_file2 (layout_template, 2, body_data);
+    if (output_layout == NULL)
+    {
+      fprintf (stderr, "NULL returned while rendering template %s\n", layout_template);
+      exit (EXIT_FAILURE);
+    }
 
     char dest_file[LEN_MAX_FILENAME + sizeof ".html"];
     snprintf (dest_file, sizeof dest_file, "%s.html", fb);
@@ -310,7 +300,9 @@ PRINT_DEBUG ("sub_title is '%s' at L%d\n", sub_title, __LINE__);
       return errno;
     }
 
-    fwrite (output, strlen (output), 1, fp);
+    fwrite (output_head, strlen (output_head), 1, fp);
+    fwrite (output_layout, strlen (output_layout), 1, fp);
+    fwrite (output_tail, strlen (output_tail), 1, fp);
 
     if (fclose (fp) == EOF)
     {
@@ -318,12 +310,11 @@ PRINT_DEBUG ("sub_title is '%s' at L%d\n", sub_title, __LINE__);
     }
 
     free (contents);
-    free (output_head_tmp);
-    free (output_layout_tmp);
+    free (output_head);
+    free (output_layout);
   }
 
   free (cfgopts);
-  free (output_tail);
 
   if (closedir (infiles_dir) != 0)
   {

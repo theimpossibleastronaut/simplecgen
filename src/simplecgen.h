@@ -45,7 +45,7 @@
 #   define PRINT_DEBUG printf ("[DEBUG]:"); printf
 #endif
 
-#define LINE_LEN_MAX 161
+#define LEN_MAX_LINE 161
 
 #ifndef PATH_MAX
 # #define PATH_MAX 256
@@ -67,9 +67,9 @@ enum {
 };
 
 typedef struct cfg {
-  char site_title[LINE_LEN_MAX];
-  char site_description[LINE_LEN_MAX];
-  char repo_URL[LINE_LEN_MAX];
+  char site_title[LEN_MAX_LINE];
+  char site_description[LEN_MAX_LINE];
+  char repo_URL[LEN_MAX_LINE];
 } struct_cfg;
 
 #endif

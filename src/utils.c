@@ -77,9 +77,9 @@ parse_config (const char *cf, struct cfg *cfgopts)
     exit (ERROR_CONFIG_OPEN);
   }
 
-  char cfg_line[LINE_LEN_MAX];
+  char cfg_line[LEN_MAX_LINE];
 
-  while (fgets (cfg_line, LINE_LEN_MAX, cfg_p) != NULL)
+  while (fgets (cfg_line, LEN_MAX_LINE, cfg_p) != NULL)
   {
     if (*cfg_line == '#')
       continue;
