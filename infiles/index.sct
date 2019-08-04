@@ -2,3 +2,7 @@ title:Home
 layout:default
 ---
 <p>Hello, World</p>
+
+<p>This is a <a
+href="https://github.com/theimpossibleastronaut/simplecgen/">simplecgen</a>
+sample site.</p>
