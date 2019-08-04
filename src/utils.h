@@ -1,7 +1,7 @@
 /*
  * utils.h
  *
- * Copyright (C) 2017-2018  Andy Alt (andy400-dev@yahoo.com)
+ * Copyright (C) 2017-2019  Andy Alt (andy400-dev@yahoo.com)
  *
  * This file is part of simplecgen <https://github.com/theimpossibleastronaut/simplecgen>
  *
@@ -36,6 +36,3 @@ bufchk (const char *str, ushort boundary);
 
 void
 trim (char *str);
-
-void
-add_newline (char *str);

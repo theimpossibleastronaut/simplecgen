@@ -1,7 +1,7 @@
 /*
  * utils.c
  *
- * Copyright (C) 2017-2018  Andy Alt (andy400-dev@yahoo.com)
+ * Copyright (C) 2017-2019  Andy Alt (andy400-dev@yahoo.com)
  *
  * The file is part of simplecgen <https://github.com/theimpossibleastronaut/simplecgen>
  *
@@ -192,13 +192,3 @@ trim (char *str)
 
   return;
 }
-
-void
-add_newline (char *str)
-{
-  static size_t len;
-  len = strlen (str);
-  str[len] = '\n';
-  str[len + 1] = '\0';
-}
-
