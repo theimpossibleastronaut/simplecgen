@@ -1,5 +1,3 @@
 build
 *~
-*.geany
-# only ignore generated files in the top level directory
-/*.html
+/_web_root/

@@ -27,6 +27,7 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <limits.h>
+#include <sys/stat.h>
 
 #include "simplecgen.h"
 #include "utils.h"
@@ -290,8 +291,12 @@ PRINT_DEBUG ("sub_title is '%s' at L%d\n", sub_title, __LINE__);
       exit (EXIT_FAILURE);
     }
 
-    char dest_file[LEN_MAX_FILENAME + sizeof ".html"];
-    snprintf (dest_file, sizeof dest_file, "%s.html", fb);
+    int res_access = access ("_web_root", F_OK);
+    if (res_access)
+      mkdir ("_web_root", S_IRWXU);
+
+    char dest_file[sizeof "_web_root/" + LEN_MAX_FILENAME + sizeof ".html"];
+    snprintf (dest_file, sizeof dest_file, "_web_root/%s.html", fb);
 
     if ((fp = fopen (dest_file, "w")) == NULL)
     {
