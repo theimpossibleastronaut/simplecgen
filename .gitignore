@@ -1,0 +1,14 @@
+build
+*~
+*.geany
+# only ignore generated files in the top level directory
+src
+assets
+README.md
+/templates/
+/infiles/
+/COPYING
+/.travis.yml
+/.gitattributes
+/.gitmodules
+/simplecgen.conf
