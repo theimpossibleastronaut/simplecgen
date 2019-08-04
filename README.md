@@ -20,6 +20,8 @@ To build simplecgen:
 simplecgen will look for the config file (simplecgen.conf) in the
 directory from which you are running simplecgen.
 
+The sample site is published at http://theimpossibleastronaut.com/simplecgen/
+
 To generate the sample site:
 
     From the top level directory
