@@ -25,21 +25,22 @@
 
 #include "utils.h"
 
-/**
- * Erases characters from the beginning of a string
- * (i.e. shifts the remaining string to the left
- *
- * This function operates differently than del_char_shift_left
- *
- * example use shown in parse_config()
+/*!
+ * If a string begins with 'c', returns a pointer to the first occurrence
+ * in the string after 'c'
  */
-void del_char (char **str, const char c)
+char *
+del_char_shift_left (const char c, char *src_str)
 {
-  while (**str == c)
-    ++(*str);
+  if (*src_str != c)
+    return src_str;
 
-  return;
+  while (*src_str == c)
+    src_str++;
+
+  return src_str;
 }
+
 
 static void
 parse_option (char *str, const char *l)
@@ -52,8 +53,8 @@ parse_option (char *str, const char *l)
     exit (ERROR_CONFIG_LINE);
   }
 
-  del_char (&value, '=');
-  del_char (&value, ' ');
+  value = del_char_shift_left ('=', value);
+  value = del_char_shift_left (' ', value);
 
   trim (value);
   strcpy (str, value);

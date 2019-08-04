@@ -25,8 +25,8 @@
 
 #include "simplecgen.h"
 
-void
-del_char (char **str, const char c);
+char *
+del_char_shift_left (const char c, char *src_str);
 
 void
 parse_config (const char *cf, struct cfg *cfgopts);

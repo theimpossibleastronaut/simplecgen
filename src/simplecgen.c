@@ -147,7 +147,7 @@ int main(int argc, char **argv)
       return 1;
     }
 
-    del_char (&title, ':');
+    title = del_char_shift_left (':', title);
     trim (title);
 
     /* get the layout line */
@@ -172,7 +172,7 @@ int main(int argc, char **argv)
   PRINT_DEBUG ("Layout: '%s'\n", layout);
 #endif
 
-    del_char (&layout, ':');
+    layout = del_char_shift_left (':', layout);
 
 #ifdef DEBUG
   PRINT_DEBUG ("Layout: '%s'\n", layout);
@@ -222,8 +222,8 @@ int main(int argc, char **argv)
       return 1;
     }
 
-    while (body[0] == '-' || body[0] == '\n')
-      del_char (&body, body[0]);
+    while (*body == '-' || *body == '\n')
+      body = del_char_shift_left (*body, body);
 
     len = strlen (body) - 1;
 
