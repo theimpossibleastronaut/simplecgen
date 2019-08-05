@@ -72,4 +72,22 @@ typedef struct cfg {
   char repo_URL[LEN_MAX_LINE];
 } struct_cfg;
 
+typedef struct st_page st_page;
+
+struct st_page {
+  char *layout;
+  char *title;
+  char *body;
+
+  /* sub_title will appear after 'page title | ' in the title bar */
+  char sub_title[LEN_MAX_LINE];
+
+  char *sct_basename;
+
+  char *contents;
+};
+
+void
+process_sct (char *input_file, struct_cfg *cfgopts, st_page *st_page_props);
+
 #endif

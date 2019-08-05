@@ -116,151 +116,21 @@ int main(int argc, char **argv)
     snprintf (infile_URL, sizeof infile_URL, "%s/%s", cfgopts.repo_URL, dir_entry->d_name);
 
     printf ("processing %s\n", input_file);
-
-    FILE *fp = fopen (input_file, "r");
-    if (fp == NULL)
-    {
-      perror ("Error opening");
-      return errno;
-    }
-
-    /* get the title line */
-    char title_line[LEN_MAX_LINE + 1];
-    if (fgets (title_line, LEN_MAX_LINE, fp) == NULL)
-    {
-      perror ("Error getting line");
-      fclose (fp);
-      return 1;
-    }
-
-    char *title = strchr (title_line, ':');
-
-    if (title == NULL)
-    {
-      printf ("%s has the wrong format\n", input_file);
-      return 1;
-    }
-
-    title++;
-    title = del_char_shift_left (' ', title);
-    trim (title);
-
-    /* get the layout line */
-    char layout_line[LEN_MAX_LINE + 1];
-
-    if (fgets (layout_line, LEN_MAX_LINE, fp) == NULL)
-    {
-      perror ("Error getting line");
-      fclose (fp);
-      return 1;
-    }
-
-    char *layout = strchr (layout_line, ':');
-
-    if (layout == NULL)
-    {
-      printf ("%s has the wrong format\n", input_file);
-      return 1;
-    }
-
-#ifdef DEBUG
-  PRINT_DEBUG ("Layout: '%s'\n", layout);
-#endif
-
-    layout++;
-    layout = del_char_shift_left (' ', layout);
-
-#ifdef DEBUG
-  PRINT_DEBUG ("Layout: '%s'\n", layout);
-#endif
-
-    trim (layout);
-
-#ifdef DEBUG
-  PRINT_DEBUG ("Layout: '%s'\n", layout);
-#endif
-
-    /* Go back to the beginning of the file */
-    if (fseek (fp, 0, SEEK_END) != 0)
-    {
-      perror ("Error while seeking file");
-      return errno;
-    }
-
-    size_t len = ftell (fp);
-
-    char *contents;
-    if ((contents = calloc (len + 1, 1)) == NULL)
-    {
-      printf ("Unable to allocate memory\n");
-      return 1;
-    }
-
-    rewind (fp);
-    fread (contents, len, 1, fp);
-
-    if (fclose (fp) == EOF)
-    {
-      perror ("Error  closing");
-      free (contents);
-      return errno;
-    }
-
-    /* find the first ocurrence of "-" */
-    // char *body;
-    char *body = strchr (contents, '-');
-
-    if (body == NULL)
-    {
-      printf ("%s has the wrong format\n", input_file);
-      fclose (fp);
-      free (contents);
-      return 1;
-    }
-
-    while (*body == '-' || *body == '\n')
-      body = del_char_shift_left (*body, body);
-
-    len = strlen (body) - 1;
-
-    /* truncate anything, especially newlines */
-    while (body[len] != '>')
-    {
-      body[len] = '\0';
-      len--;
-    }
-
-    char fb[LEN_MAX_FILENAME];
-
-    /* truncate the .sct extension */
-    input_file[strlen (input_file) - 4] = '\0';
-    strcpy (fb, basename (input_file));
-
-    /* sub_title will appear after 'page title | ' in the title bar */
-    char sub_title[LEN_MAX_LINE];
-
-    if (strcmp (fb, "index") != 0)
-      strcpy (sub_title, cfgopts.site_title);
-    else
-      strcpy (sub_title, cfgopts.site_description);
-
-#ifdef DEBUG
-PRINT_DEBUG ("basename is '%s' at L%d\n", fb, __LINE__);
-PRINT_DEBUG ("sub_title is '%s' at L%d\n", sub_title, __LINE__);
-#endif
+    st_page st_page_props;
+    process_sct (input_file, &cfgopts, &st_page_props);
 
     const char *title_data[] = {
-      "title", title,
-      "sub_title", sub_title
+      "title", st_page_props.title,
+      "sub_title", st_page_props.sub_title
     };
 
     const char *body_data[] = {
-      "body", body,
+      "body", st_page_props.body,
       "infile_URL", infile_URL
     };
 
     char layout_template[LEN_MAX_FILENAME] = "";
-    sprintf (layout_template, "templates/%s.html", layout);
+    sprintf (layout_template, "templates/%s.html", st_page_props.layout);
 
     FILE *fp_layout;
     if ((fp_layout = fopen (layout_template, "r")) == NULL)
@@ -291,12 +161,13 @@ PRINT_DEBUG ("sub_title is '%s' at L%d\n", sub_title, __LINE__);
       mkdir ("_web_root", S_IRWXU);
 
     char dest_file[sizeof "_web_root/" + LEN_MAX_FILENAME + sizeof ".html"];
-    snprintf (dest_file, sizeof dest_file, "_web_root/%s.html", fb);
+    snprintf (dest_file, sizeof dest_file, "_web_root/%s.html", st_page_props.sct_basename);
 
+    FILE *fp;
     if ((fp = fopen (dest_file, "w")) == NULL)
     {
       perror ("Error opening");
-      free (contents);
+      free (st_page_props.contents);
       return errno;
     }
 
@@ -309,7 +180,7 @@ PRINT_DEBUG ("sub_title is '%s' at L%d\n", sub_title, __LINE__);
       perror ("Error while closing file\n");
     }
 
-    free (contents);
+    free (st_page_props.contents);
     free (output_head);
     free (output_layout);
   }
@@ -321,4 +192,136 @@ PRINT_DEBUG ("sub_title is '%s' at L%d\n", sub_title, __LINE__);
   }
 
   return 0;
+}
+
+void
+process_sct (char *input_file, struct_cfg *cfgopts, st_page *st_page_props)
+{
+  FILE *fp = fopen (input_file, "r");
+  if (fp == NULL)
+  {
+    perror ("Error opening");
+    exit (errno);
+  }
+
+  /* get the title line */
+  /* declared statically because 'title' points to it outside of this function */
+  static char title_line[LEN_MAX_LINE + 1];
+  if (fgets (title_line, LEN_MAX_LINE, fp) == NULL)
+  {
+    perror ("Error getting line");
+    fclose (fp);
+    exit (EXIT_FAILURE);
+  }
+
+  st_page_props->title = strchr (title_line, ':');
+
+  if (st_page_props->title == NULL)
+  {
+    printf ("%s has the wrong format\n", input_file);
+    exit (EXIT_FAILURE);
+  }
+
+  st_page_props->title++;
+  st_page_props->title = del_char_shift_left (' ', st_page_props->title);
+  trim (st_page_props->title);
+
+  /* get the layout line */
+  /* declared statically because 'layout' points to it outside of this function */
+  static char layout_line[LEN_MAX_LINE + 1];
+
+  if (fgets (layout_line, LEN_MAX_LINE, fp) == NULL)
+  {
+    perror ("Error getting line");
+    fclose (fp);
+    exit (EXIT_FAILURE);
+  }
+
+  st_page_props->layout = strchr (layout_line, ':');
+
+  if (st_page_props->layout == NULL)
+  {
+    printf ("%s has the wrong format\n", input_file);
+    exit (EXIT_FAILURE);
+  }
+
+#ifdef DEBUG
+PRINT_DEBUG ("Layout: '%s'\n", st_page_props->layout);
+#endif
+
+  st_page_props->layout++;
+  st_page_props->layout = del_char_shift_left (' ', st_page_props->layout);
+
+#ifdef DEBUG
+PRINT_DEBUG ("Layout: '%s'\n", st_page_props->layout);
+#endif
+
+  trim (st_page_props->layout);
+
+#ifdef DEBUG
+PRINT_DEBUG ("Layout: '%s'\n", st_page_props->layout);
+#endif
+
+  /* Go back to the beginning of the file */
+  if (fseek (fp, 0, SEEK_END) != 0)
+  {
+    perror ("Error while seeking file");
+    exit (errno);
+  }
+
+  size_t len = ftell (fp);
+
+  if ((st_page_props->contents = calloc (len + 1, 1)) == NULL)
+  {
+    printf ("Unable to allocate memory\n");
+    exit (EXIT_FAILURE);
+  }
+
+  rewind (fp);
+  fread (st_page_props->contents, len, 1, fp);
+
+  if (fclose (fp) == EOF)
+  {
+    perror ("Error  closing");
+    free (st_page_props->contents);
+    exit (errno);
+  }
+
+  /* find the first ocurrence of "-" */
+  // char *body;
+  st_page_props->body = strchr (st_page_props->contents, '-');
+
+  if (st_page_props->body == NULL)
+  {
+    printf ("%s has the wrong format\n", input_file);
+    fclose (fp);
+    free (st_page_props->contents);
+    exit (EXIT_FAILURE);
+  }
+
+  while (*st_page_props->body == '-' || *st_page_props->body == '\n')
+    st_page_props->body = del_char_shift_left (*st_page_props->body, st_page_props->body);
+
+  len = strlen (st_page_props->body) - 1;
+
+  /* truncate anything, especially newlines */
+  while (st_page_props->body[len] != '>')
+  {
+    st_page_props->body[len] = '\0';
+    len--;
+  }
+
+  /* truncate the .sct extension */
+  input_file[strlen (input_file) - 4] = '\0';
+  st_page_props->sct_basename = basename (input_file);
+
+  if (strcmp (st_page_props->sct_basename, "index") != 0)
+    strcpy (st_page_props->sub_title, cfgopts->site_title);
+  else
+    strcpy (st_page_props->sub_title, cfgopts->site_description);
+
+#ifdef DEBUG
+PRINT_DEBUG ("basename is '%s' at L%d\n", st_page_props->sct_basename, __LINE__);
+PRINT_DEBUG ("sub_title is '%s' at L%d\n", st_page_props->sub_title, __LINE__);
+#endif
 }
