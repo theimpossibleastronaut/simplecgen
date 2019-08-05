@@ -57,6 +57,8 @@
 
 typedef unsigned short int ushort;
 
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof(a[0]))
+
 /* This enum list will get used more later
  */
 enum {

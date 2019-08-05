@@ -119,12 +119,9 @@ int main(int argc, char **argv)
     st_page st_page_props;
     process_sct (input_file, &cfgopts, &st_page_props);
 
-    const char *title_data[] = {
+    const char *data[] = {
       "title", st_page_props.title,
-      "sub_title", st_page_props.sub_title
-    };
-
-    const char *body_data[] = {
+      "sub_title", st_page_props.sub_title,
       "body", st_page_props.body,
       "infile_URL", infile_URL
     };
@@ -139,17 +136,19 @@ int main(int argc, char **argv)
       return 1;
     }
 
+    const int data_size = (ARRAY_SIZE(data) / 2);
+
     /* FIXME: need a check to make sure the directory and file exists
      * add more flexibility so the user can change this (hint: config file)
      */
-    char *output_head = render_template_file2 ("templates/head.html", 2, title_data);
+    char *output_head = render_template_file2 ("templates/head.html", data_size, data);
     if (output_head == NULL)
     {
       fprintf (stderr, "NULL returned while rendering template %s\n", "templates/head.html");
       exit (EXIT_FAILURE);
     }
 
-    char *output_layout = render_template_file2 (layout_template, 2, body_data);
+    char *output_layout = render_template_file2 (layout_template, data_size, data);
     if (output_layout == NULL)
     {
       fprintf (stderr, "NULL returned while rendering template %s\n", layout_template);
