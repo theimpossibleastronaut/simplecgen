@@ -141,7 +141,8 @@ int main(int argc, char **argv)
       return 1;
     }
 
-    title = del_char_shift_left (':', title);
+    title++;
+    title = del_char_shift_left (' ', title);
     trim (title);
 
     /* get the layout line */
@@ -166,7 +167,8 @@ int main(int argc, char **argv)
   PRINT_DEBUG ("Layout: '%s'\n", layout);
 #endif
 
-    layout = del_char_shift_left (':', layout);
+    layout++;
+    layout = del_char_shift_left (' ', layout);
 
 #ifdef DEBUG
   PRINT_DEBUG ("Layout: '%s'\n", layout);

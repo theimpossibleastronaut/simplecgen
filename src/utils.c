@@ -53,7 +53,7 @@ parse_option (char *str, const char *l)
     exit (ERROR_CONFIG_LINE);
   }
 
-  value = del_char_shift_left ('=', value);
+  value++;
   value = del_char_shift_left (' ', value);
 
   trim (value);
