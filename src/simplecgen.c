@@ -53,14 +53,7 @@ int main(int argc, char **argv)
   // simplecgen is run from.
   sprintf (cfg_file, "./%s", CONFIG_FILE);
 
-  struct_cfg *cfgopts = (struct_cfg*)malloc (sizeof (struct_cfg));
-  if (cfgopts == NULL)
-  {
-    fprintf (stderr, "Unable to allocate memory.\n");
-    exit (EXIT_FAILURE);
-  }
-
-  // char site_title[120];
+  struct_cfg cfgopts;
 
 #ifdef DEBUG
   PRINT_DEBUG ("config file = %s\n", cfg_file);
@@ -70,12 +63,12 @@ int main(int argc, char **argv)
    * a single structure, as opposed to all the different config
    * variables
    */
-  parse_config  (cfg_file, cfgopts);
+  parse_config  (cfg_file, &cfgopts);
 
 #ifdef DEBUG
-  PRINT_DEBUG ("after parsing, site_title is '%s'\n", cfgopts->site_title);
-  PRINT_DEBUG ("after parsing, site_description is '%s'\n", cfgopts->site_description);
-  PRINT_DEBUG ("after parsing, repo_URL is '%s'\n", cfgopts->repo_URL);
+  PRINT_DEBUG ("after parsing, site_title is '%s'\n", cfgopts.site_title);
+  PRINT_DEBUG ("after parsing, site_description is '%s'\n", cfgopts.site_description);
+  PRINT_DEBUG ("after parsing, repo_URL is '%s'\n", cfgopts.repo_URL);
 #endif
 
   FILE *tail_fp;
@@ -119,8 +112,8 @@ int main(int argc, char **argv)
     char input_file[LEN_MAX_FILENAME + sizeof "infiles/"];
     snprintf (input_file, sizeof input_file, "infiles/%s", dir_entry->d_name);
 
-    char infile_URL[LEN_MAX_FILENAME + sizeof cfgopts->repo_URL];
-    snprintf (infile_URL, sizeof infile_URL, "%s/%s", cfgopts->repo_URL, dir_entry->d_name);
+    char infile_URL[LEN_MAX_FILENAME + sizeof cfgopts.repo_URL];
+    snprintf (infile_URL, sizeof infile_URL, "%s/%s", cfgopts.repo_URL, dir_entry->d_name);
 
     printf ("processing %s\n", input_file);
 
@@ -245,9 +238,9 @@ int main(int argc, char **argv)
     char sub_title[LEN_MAX_LINE];
 
     if (strcmp (fb, "index") != 0)
-      strcpy (sub_title, cfgopts->site_title);
+      strcpy (sub_title, cfgopts.site_title);
     else
-      strcpy (sub_title, cfgopts->site_description);
+      strcpy (sub_title, cfgopts.site_description);
 
 #ifdef DEBUG
 PRINT_DEBUG ("basename is '%s' at L%d\n", fb, __LINE__);
@@ -318,8 +311,6 @@ PRINT_DEBUG ("sub_title is '%s' at L%d\n", sub_title, __LINE__);
     free (output_head);
     free (output_layout);
   }
-
-  free (cfgopts);
 
   if (closedir (infiles_dir) != 0)
   {
